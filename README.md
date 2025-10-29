@@ -1,15 +1,14 @@
-# vibecode-full-stack-starter-kit - Full-Stack Development Environment
+# AI Tools Directory - Full-Stack MVP
 
-Generated on: Thu Sep  4 01:37:12 PM EEST 2025
-Location: /home/softart/scripts/vibecode-full-stack-starter-kit
+A full-stack application for discovering and sharing AI tools, built with Laravel and Next.js.
 
 ## 🚀 Tech Stack
 
-- **Frontend**: Next.js + React + TypeScript (Port 8200)
-- **Backend**: Laravel + PHP 8.2 + Nginx (Port 8201)  
+- **Frontend**: Next.js 15 + React 19 + TypeScript (Port 8200)
+- **Backend**: Laravel 12 + PHP 8.2 + Nginx (Port 8201)
 - **Database**: MySQL 8.0 (Port 8203)
 - **Cache**: Redis 7 (Port 8204)
-- **Development Tools**: Alpine container (Port 8205)
+- **Authentication**: Laravel Sanctum
 
 ## 📋 Quick Start
 
@@ -18,15 +17,40 @@ Location: /home/softart/scripts/vibecode-full-stack-starter-kit
    ./start.sh
    ```
 
-2. **Access your applications:**
-   - Frontend: http://localhost:8200
-   - Backend: http://localhost:8201
-   - API Status: http://localhost:8201/api/status
+2. **Setup the backend (first time only):**
+   ```bash
+   ./setup-backend.sh
+   ```
 
-3. **Stop the environment:**
+3. **Access your application:**
+   - Frontend: http://localhost:8200
+   - Backend API: http://localhost:8201/api
+
+4. **Login with demo account:**
+   - Email: `ivan@admin.local`
+   - Password: `password`
+
+5. **Stop the environment:**
    ```bash
    ./stop.sh
    ```
+
+## ✨ Features
+
+- **Authentication** - Email/password login with Laravel Sanctum
+- **Role-Based Access** - 6 user roles (Owner, Backend Dev, Frontend Dev, QA, Designer, PM)
+- **Tool Management** - Add, browse, and categorize AI tools
+- **Dashboard** - Personalized welcome with role display
+- **Responsive Design** - Clean, modern UI with Tailwind CSS
+- **RESTful API** - Well-structured Laravel backend
+- **Type Safety** - TypeScript throughout the frontend
+
+## 📚 Documentation
+
+- **[Quick Start Guide](QUICK_START.md)** - Get up and running in minutes
+- **[Full Setup Guide](SETUP_GUIDE.md)** - Detailed documentation and features
+- **[MVP Checklist](MVP_CHECKLIST.md)** - Complete implementation checklist
+- **[Troubleshooting Guide](TROUBLESHOOTING.md)** - Common issues and solutions
 
 ## 🔧 Management Scripts
 
