@@ -37,7 +37,7 @@ export default function DashboardPage() {
         api.getTools(),
         api.getCategories(),
       ]);
-      setTools(toolsData.tools);
+      setTools(toolsData.data);
       setCategories(categoriesData.categories);
     } catch (error) {
       console.error('Failed to load data:', error);
@@ -56,9 +56,9 @@ export default function DashboardPage() {
     try {
       await api.createTool({
         name: newTool.name,
+        link: newTool.url,
         description: newTool.description,
-        url: newTool.url,
-        category_id: parseInt(newTool.category_id),
+        category_ids: [parseInt(newTool.category_id)],
       });
       setNewTool({ name: '', description: '', url: '', category_id: '' });
       setShowAddTool(false);
@@ -115,12 +115,20 @@ export default function DashboardPage() {
               </div>
               <h1 className="text-xl font-bold text-gray-900">AI Tools Directory</h1>
             </div>
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition"
-            >
-              Logout
-            </button>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => router.push('/tools')}
+                className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition"
+              >
+                Browse Tools
+              </button>
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition"
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -232,16 +240,18 @@ export default function DashboardPage() {
                 >
                   <div className="flex justify-between items-start mb-3">
                     <h4 className="text-lg font-semibold text-gray-900">{tool.name}</h4>
-                    <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                      {tool.category?.name}
-                    </span>
+                    {tool.categories && tool.categories.length > 0 && (
+                      <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                        {tool.categories[0].name}
+                      </span>
+                    )}
                   </div>
                   <p className="text-gray-600 text-sm mb-4 line-clamp-2">
                     {tool.description || 'No description'}
                   </p>
-                  {tool.url && (
+                  {tool.link && (
                     <a
-                      href={tool.url}
+                      href={tool.link}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-600 hover:text-blue-700 text-sm font-medium"

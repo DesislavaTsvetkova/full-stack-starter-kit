@@ -25,7 +25,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const { user } = await api.getMe();
       setUser(user);
-    } catch (error) {
+    } catch {
       setUser(null);
     } finally {
       setLoading(false);
@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const { user } = await api.getMe();
       setUser(user);
-    } catch (error) {
+    } catch {
       setUser(null);
     }
   };

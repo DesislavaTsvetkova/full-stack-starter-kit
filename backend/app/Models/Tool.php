@@ -13,16 +13,29 @@ class Tool extends Model
 
     protected $fillable = [
         'name',
+        'link',
         'description',
+        'official_documentation',
+        'how_to_use',
+        'real_examples',
+        'tags',
+        'images',
         'url',
         'category_id',
         'user_id',
     ];
 
     protected $casts = [
+        'tags' => 'array',
+        'images' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class);
+    }
 
     public function category(): BelongsTo
     {

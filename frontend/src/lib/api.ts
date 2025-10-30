@@ -11,28 +11,39 @@ export interface User {
   } | null;
 }
 
-export interface Tool {
+export interface Role {
   id: number;
   name: string;
-  description: string | null;
-  url: string | null;
-  category_id: number;
-  user_id: number;
-  created_at: string;
-  updated_at: string;
-  category?: {
-    id: number;
-    name: string;
-    slug: string;
-  };
-  user?: User;
+  display_name: string;
+  description?: string | null;
 }
 
 export interface Category {
   id: number;
   name: string;
   slug: string;
+  description?: string | null;
   tools_count?: number;
+}
+
+export interface Tool {
+  id: number;
+  name: string;
+  link?: string | null;
+  description: string | null;
+  official_documentation?: string | null;
+  how_to_use?: string | null;
+  real_examples?: string | null;
+  tags?: string[] | null;
+  images?: string[] | null;
+  url: string | null;
+  category_id: number;
+  user_id: number;
+  created_at: string;
+  updated_at: string;
+  categories?: Category[];
+  recommended_for_roles?: Role[];
+  user?: User;
 }
 
 class ApiClient {
@@ -61,14 +72,17 @@ class ApiClient {
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
-    const headers: HeadersInit = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      ...options.headers,
     };
 
     if (this.token) {
       headers.Authorization = `Bearer ${this.token}`;
+    }
+
+    if (options.headers) {
+      Object.assign(headers, options.headers);
     }
 
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
@@ -104,15 +118,43 @@ class ApiClient {
     return this.request<{ user: User }>('/me');
   }
 
-  async getTools(): Promise<{ tools: Tool[] }> {
-    return this.request<{ tools: Tool[] }>('/tools');
+  async getTools(params?: {
+    search?: string;
+    category_id?: number;
+    role_id?: number;
+    tags?: string[];
+    page?: number;
+  }): Promise<{
+    data: Tool[];
+    current_page: number;
+    last_page: number;
+    total: number;
+  }> {
+    const searchParams = new URLSearchParams();
+    if (params?.search) searchParams.append('search', params.search);
+    if (params?.category_id) searchParams.append('category_id', params.category_id.toString());
+    if (params?.role_id) searchParams.append('role_id', params.role_id.toString());
+    if (params?.tags) params.tags.forEach(tag => searchParams.append('tags[]', tag));
+    if (params?.page) searchParams.append('page', params.page.toString());
+
+    return this.request(`/tools?${searchParams.toString()}`);
+  }
+
+  async getTool(id: number): Promise<{ tool: Tool }> {
+    return this.request<{ tool: Tool }>(`/tools/${id}`);
   }
 
   async createTool(data: {
     name: string;
-    description?: string;
-    url?: string;
-    category_id: number;
+    link: string;
+    description: string;
+    official_documentation?: string;
+    how_to_use?: string;
+    real_examples?: string;
+    tags?: string[];
+    images?: string[];
+    category_ids: number[];
+    role_ids?: number[];
   }): Promise<{ tool: Tool; message: string }> {
     return this.request<{ tool: Tool; message: string }>('/tools', {
       method: 'POST',
@@ -120,8 +162,46 @@ class ApiClient {
     });
   }
 
+  async updateTool(id: number, data: {
+    name?: string;
+    link?: string;
+    description?: string;
+    official_documentation?: string;
+    how_to_use?: string;
+    real_examples?: string;
+    tags?: string[];
+    images?: string[];
+    category_ids?: number[];
+    role_ids?: number[];
+  }): Promise<{ tool: Tool; message: string }> {
+    return this.request<{ tool: Tool; message: string }>(`/tools/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteTool(id: number): Promise<{ message: string }> {
+    return this.request<{ message: string }>(`/tools/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
   async getCategories(): Promise<{ categories: Category[] }> {
     return this.request<{ categories: Category[] }>('/categories');
+  }
+
+  async createCategory(data: {
+    name: string;
+    description?: string;
+  }): Promise<{ category: Category; message: string }> {
+    return this.request<{ category: Category; message: string }>('/categories', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getRoles(): Promise<{ roles: Role[] }> {
+    return this.request<{ roles: Role[] }>('/roles');
   }
 }
 
