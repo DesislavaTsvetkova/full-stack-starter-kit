@@ -5,10 +5,11 @@ import { useRouter } from 'next/navigation';
 import { api, Tool, Category, Role } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 import ToolForm from '@/components/ToolForm';
+import Header from '@/components/Header';
 
 export default function ToolsPage() {
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, logout } = useAuth();
 
   const [tools, setTools] = useState<Tool[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -120,6 +121,7 @@ export default function ToolsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Header />
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">AI Tools Directory</h1>
@@ -223,22 +225,6 @@ export default function ToolsPage() {
                 >
                   <div className="flex justify-between items-start mb-3">
                     <h3 className="text-xl font-semibold text-gray-900">{tool.name}</h3>
-                    {user?.id === tool.user_id && (
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleEdit(tool)}
-                          className="text-blue-600 hover:text-blue-700 text-sm"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(tool.id)}
-                          className="text-red-600 hover:text-red-700 text-sm"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    )}
                   </div>
 
                   {tool.categories && tool.categories.length > 0 && (

@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { api, Tool, Category } from '@/lib/api';
+import ToolForm from '@/components/ToolForm';
+import Header from '@/components/Header';
 
 export default function DashboardPage() {
   const { user, loading: authLoading, logout } = useAuth();
@@ -46,10 +48,7 @@ export default function DashboardPage() {
     }
   };
 
-  const handleLogout = async () => {
-    await logout();
-    router.push('/login');
-  };
+  // Logout handled via shared Header
 
   const handleAddTool = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,44 +93,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                <svg
-                  className="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                  />
-                </svg>
-              </div>
-              <h1 className="text-xl font-bold text-gray-900">AI Tools Directory</h1>
-            </div>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => router.push('/tools')}
-                className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition"
-              >
-                Browse Tools
-              </button>
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
@@ -164,71 +126,15 @@ export default function DashboardPage() {
           {showAddTool && (
             <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
               <h4 className="text-lg font-semibold text-gray-900 mb-4">Add New Tool</h4>
-              <form onSubmit={handleAddTool} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Tool Name
-                  </label>
-                  <input
-                    type="text"
-                    value={newTool.name}
-                    onChange={(e) => setNewTool({ ...newTool, name: e.target.value })}
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-900"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description
-                  </label>
-                  <textarea
-                    value={newTool.description}
-                    onChange={(e) => setNewTool({ ...newTool, description: e.target.value })}
-                    rows={3}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-900"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    URL
-                  </label>
-                  <input
-                    type="url"
-                    value={newTool.url}
-                    onChange={(e) => setNewTool({ ...newTool, url: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-900"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Category
-                  </label>
-                  <select
-                    value={newTool.category_id}
-                    onChange={(e) => setNewTool({ ...newTool, category_id: e.target.value })}
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-900"
-                  >
-                    <option value="">Select a category</option>
-                    {categories.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <button
-                  type="submit"
-                  className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
-                >
-                  Add Tool
-                </button>
-              </form>
+              <ToolForm
+                onSuccess={() => { setShowAddTool(false); loadData(); }}
+                onCancel={() => setShowAddTool(false)}
+              />
             </div>
           )}
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {tools.length === 0 ? (
+            {(!Array.isArray(tools) || tools.length === 0) ? (
               <div className="col-span-full text-center py-12 text-gray-500">
                 No tools yet. Add your first tool!
               </div>
